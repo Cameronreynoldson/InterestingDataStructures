@@ -7,7 +7,7 @@ public class LRUcache<K,V> extends LinkedHashMap<K,V>
 
 	public LRUcache(int s)]
 	{
-		super(s,0.75f,true);
+		super(16,0.75f,true);
 		limit = s; 
 	}
 
