@@ -1,53 +1,75 @@
-import java.util.*;
+import java.util.*; 
 
 public class Trie
 {
-	char c;
-	Trie[] children;
-	boolean word;
-
+	Trie[] children; 
+	boolean isWord;  
+	int count; 
+	
 	public Trie()
 	{
-		this.c = 0;
-		this.children = new Trie[26];
-		this.word = false;
+		children = new char[26];
+		isWord = false; 
+		usedMoreThanOnce = false; 
 	}
 
-	public void add(String s)
+
+	public void add(String str)
 	{
-		if (s.isEmpty())
+		if(str.length() == 0)
 		{
-			this.word = true;
-			return;
+			this.isWord = true;
+			return; 
 		}
 
-		char letter = s.charAt(0);
-		
-		int index = letter - 'a';
-
-		if (this.children[index] == null)
+		char c = str.charAt(0);
+		int index = c - 'a';
+		if(this.children[index] == null)
 		{
-			this.children[index] = new Trie();
+			this.children[c-96] = new Trie();
 		}
 
-		this.children[index].add(s.substring(1));
+		this.count++;
+
+		this.children[c-96].add(str.substring(1));
 	}
 
-	public boolean isWord(String s)
+
+	public boolean search(String s)
 	{
-		if (s.isEmpty())
+		if(s.length() == 0)
 		{
-			return this.word;
+			return this.isWord();
 		}
 
-		int index = s.charAt(0) - 'a';
-
-		if (this.children[index] == null)
+		char c = str.charAt(0);
+		int index = c - 'a';
+		if(this.children[index] == null)
 		{
+			return false; 
+		}
+
+		return this.children[index].search(s.substring(1));
+	}
+
+	public boolean remove(String s)
+	{
+		if(!search(s))
 			return false;
-		}
 
-		return this.children[index].isWord(s.substring(1));
+		Trie current = this; 
+		for(char c : s.toCharArray())
+		{
+			Trie child = current.children[c-'a'];
+			if(child.count == 1)
+			{
+				this.children[c-'a'] = null;
+				return true; 
+			}
+
+			child.count--;
+			current = child;
+		}
 	}
 
 	public List<String> getWords()
@@ -71,7 +93,6 @@ public class Trie
 			if (this.children[i] != null)
 			{
 				this.children[i].collectWords(words, sb.append((char)('a' + i)));
-				
 				sb.deleteCharAt(sb.length() - 1);
 			}
 		}
